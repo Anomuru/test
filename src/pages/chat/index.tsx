@@ -94,7 +94,7 @@ const Chat = () => {
                     </ul>
                 </div>
                 <div className={cls.main__exit}>
-
+                    <p>kdasfasiodfnsadf</p>
                 </div>
             </div>
             <Outlet/>
