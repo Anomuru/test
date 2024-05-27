@@ -52,6 +52,7 @@ const Chat = () => {
     const dispatch = useDispatch()
     const {id, username} = useSelector((state: IState) => state.user)
     // const {userChats} = useSelector((state: IState) => state.chat)
+    console.log(username)
 
     function connect() {
         socket.connect()
