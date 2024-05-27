@@ -48,6 +48,9 @@ import ChatRoom from "pages/chat/chatRoom/ChatRoom";
 // }
 
 const App = () => {
+
+    console.log("Hello World")
+
     return (
         <Routes>
             <Route path="/login" element={<RegisterLogin/>}/>
