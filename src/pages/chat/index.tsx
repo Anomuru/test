@@ -5,38 +5,11 @@ import {useDispatch, useSelector} from "react-redux";
 import {socket} from "socket/socket";
 import {useHttp} from "hooks/http.hook";
 import {BackURL} from "constants/constants";
+import {IState} from "interfaces";
 
 import cls from "./style.module.sass";
 import DefaultPersonImg from "assets/userImages/Unknown_person.jpg"
 import {fetchedChat} from "slices/chatSlices";
-
-interface IUser {
-    readonly id: number | string
-    readonly username: string,
-    userLoadingStatus: string
-}
-
-interface IChatItem {
-    id: number,
-    username: string,
-    count: number,
-    date: Date | string,
-    img: null | string,
-    last_msg: string,
-}
-
-interface IState {
-    user: IUser,
-    chat: IChatItem[],
-}
-
-const userList: IUser[] = [
-    {
-        id: 1,
-        username: "Killer",
-        userLoadingStatus: "idle"
-    }
-]
 
 const Chat = () => {
     useEffect(() => {
@@ -46,16 +19,15 @@ const Chat = () => {
                 dispatch(fetchedChat(res))
             })
             .catch(err => console.log(err))
-    })
+    }, [])
 
     const {request} = useHttp()
     const dispatch = useDispatch()
     const {id, username} = useSelector((state: IState) => state.user)
-    // const {userChats} = useSelector((state: IState) => state.chat)
-    console.log(username)
+    const {userChats} = useSelector((state: IState) => state.chat)
 
-    function connect() {
-        socket.connect()
+    function connect(roomID: number) {
+        socket.connect().send({id, roomID})
     }
 
     return (
@@ -71,11 +43,11 @@ const Chat = () => {
                 <div className={cls.list}>
                     <ul className={cls.list__items}>
                         {
-                            userList.map(item => {
+                            userChats.map(item => {
                                 return (
                                     <li
                                         className={cls.item}
-                                        onClick={connect}
+                                        onClick={() => connect(item.id)}
                                     >
                                         <div className={cls.item__link}>
                                             <Link to={`/chat/room/${item.id}`}>
@@ -95,7 +67,6 @@ const Chat = () => {
                     </ul>
                 </div>
                 <div className={cls.main__exit}>
-                    <p>kdasfasiodfnsadf</p>
                 </div>
             </div>
             <Outlet/>

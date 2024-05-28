@@ -1,16 +1,28 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 // import {useForm} from "react-hook-form";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
+import {useSelector} from "react-redux";
 
 import {socket} from "socket/socket";
+import {IState} from "interfaces";
+import {useHttp} from "hooks/http.hook";
+import {BackURL} from "constants/constants";
 
 import cls from "./style.module.sass"
 import DefaultPersonImg from "assets/userImages/Unknown_person.jpg"
 
 const ChatRoom = () => {
+    // useEffect(() => {
+    //     request(`${BackURL}`)
+    //         .then(res => console.log(res))
+    //         .catch(err => console.log(err))
+    // }, [])
 
     const navigate = useNavigate()
+    const {roomID} = useParams()
+    const {request} = useHttp()
     const [value, setValue] = useState<string>()
+    const {id} = useSelector((state: IState) => state.user)
 
     function onSubmit(event: any): void {
         event.preventDefault();
@@ -18,7 +30,7 @@ const ChatRoom = () => {
     }
 
     function disconnect() {
-        socket.disconnect()
+        socket.disconnect().emit("message", id, roomID)
         navigate("/chat")
     }
 
