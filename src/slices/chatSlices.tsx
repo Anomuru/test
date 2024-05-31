@@ -20,7 +20,6 @@ const ChatSlice = createSlice({
             state.chatLoadingStatus = "loading"
         },
         fetchedChat: (state, action) => {
-            console.log(action.payload.user_chats)
             state.chatLoadingStatus = "success"
             state.userChats = action.payload.user_chats
             state.contacts = action.payload.contacts

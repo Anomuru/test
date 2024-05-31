@@ -11,22 +11,40 @@ import {BackURL} from "constants/constants";
 import cls from "./style.module.sass"
 import DefaultPersonImg from "assets/userImages/Unknown_person.jpg"
 
+interface IMassage {
+    user_id: number,
+    chat_id: number,
+    msg: string
+}
+
 const ChatRoom = () => {
-    // useEffect(() => {
-    //     request(`${BackURL}`)
-    //         .then(res => console.log(res))
-    //         .catch(err => console.log(err))
-    // }, [])
+    useEffect(() => {
+        socket.onAny((eventName, ...args) => {
+            getMessage(args[0].msg)
+        })
+    }, [])
 
     const navigate = useNavigate()
-    const {roomID} = useParams()
+    const {roomID} = useParams<string>()
     const {request} = useHttp()
-    const [value, setValue] = useState<string>()
+    const [value, setValue] = useState<string>('')
+    const [messages, setMessages] = useState<string[]>([])
     const {id} = useSelector((state: IState) => state.user)
+
+    function getMessage(value: IMassage): void {
+        setMessages(prev => [...prev, value.msg])
+    }
 
     function onSubmit(event: any): void {
         event.preventDefault();
-        socket.timeout(5000).emit('message', value);
+        socket.emit('message',
+            {
+                user_id: id,
+                chat_Id: Number(roomID),
+                msg: value
+            }
+        );
+        setValue('')
     }
 
     function disconnect() {
@@ -44,7 +62,11 @@ const ChatRoom = () => {
                 <button onClick={disconnect}>Back</button>
             </div>
             <div className={cls.room__messages}>
-
+                {
+                    messages.map(item => {
+                        return <div>{item}</div>
+                    })
+                }
             </div>
             <form
                 className={cls.room__input}
@@ -54,33 +76,12 @@ const ChatRoom = () => {
                     type="text"
                     placeholder="Message"
                     onChange={(e) => setValue(e.target.value)}
+                    value={value}
                 />
                 <button>Enter</button>
             </form>
         </div>
     );
 };
-
-
-// const [value, setValue] = useState<string>('');
-// const [isLoading, setIsLoading] = useState<boolean>(false);
-//
-// function onSubmit(event: any) {
-//     event.preventDefault();
-//     setIsLoading(true);
-//
-//     socket.timeout(5000).emit('message', value, () => {
-//         setIsLoading(false);
-//     });
-// }
-//
-// return (
-//     <form onSubmit={ onSubmit }>
-//         <input onChange={ e => setValue(e.target.value) } />
-//
-//         <button type="submit" disabled={ isLoading }>Submit</button>
-//     </form>
-// );
-
 
 export default ChatRoom;

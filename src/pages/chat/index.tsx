@@ -27,8 +27,8 @@ const Chat = () => {
     const {userChats} = useSelector((state: IState) => state.chat)
 
     function connect(roomID: number) {
-        socket.connect().send({user_id: id, chat_id: roomID})
-        socket.on("connect", () => ({user_id: id, chat_id: roomID}))
+        socket.disconnect()
+        socket.connect()
     }
 
     return (
